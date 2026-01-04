@@ -1299,7 +1299,7 @@ def connect_default_esp32():
         
         return jsonify({'status': 'success', 'message': f'Connected to Flock You device on {port}'})
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
+        return e
     
 if __name__ == '__main__':
     # Load data on startup
