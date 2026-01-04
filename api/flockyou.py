@@ -1280,6 +1280,27 @@ def handle_serial_terminal_request(data):
         print(f"Serial terminal connection error: {e}")
         emit('serial_error', {'message': f'Failed to start terminal: {str(e)}'})
 
+def connect_default_esp32():
+    """Connect to default Flock You device at /dev/ttyACM0"""
+    global flock_device_connected, flock_device_port, flock_serial_connection
+    
+    port = '/dev/ttyACM0'
+    
+    try:
+        # Create persistent connection to the port
+        flock_serial_connection = serial.Serial(port, 115200, timeout=1)
+        with connection_lock:
+            flock_device_connected = True
+        flock_device_port = port
+        
+        # Start reading thread
+        flock_thread = threading.Thread(target=flock_reader, daemon=True)
+        flock_thread.start()
+        
+        return jsonify({'status': 'success', 'message': f'Connected to Flock You device on {port}'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+    
 if __name__ == '__main__':
     # Load data on startup
     load_oui_database()
@@ -1294,6 +1315,10 @@ if __name__ == '__main__':
     heartbeat_thread = threading.Thread(target=send_heartbeat, daemon=True)
     heartbeat_thread.start()
     
+    print("Starting default esp32 flock detector")
+    x = connect_default_esp32()
+    print(x)
+
     print("Starting Flock You API server...")
     print("Server will be available at: http://localhost:5000")
     print("Press Ctrl+C to stop the server")
@@ -1308,4 +1333,6 @@ if __name__ == '__main__':
         if serial_connection and serial_connection.is_open:
             serial_connection.close()
         print("Server stopped.")
+
+
         
