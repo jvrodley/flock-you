@@ -5,11 +5,10 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-User=root
-Group=root
-ExecStart=/bin/sh /usr/rodley/flockit-you/flockit.sh
+User=rodley
+ExecStart=/bin/bash /home/rodley/flock-you/flockit.sh
 Restart=always
-WorkingDirectory=/usr/rodley/flock-you
+WorkingDirectory=/home/rodley/flock-you
 Nice=19
 LimitNOFILE=16384
 StandardInput=tty-force
